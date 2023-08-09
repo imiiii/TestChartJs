@@ -1,0 +1,115 @@
+﻿@page "/"
+@using System.Collections.ObjectModel;
+
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+Welcome to your new app.
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+<Chart Config="_config" @ref="_chart"></Chart>
+
+
+
+@code {
+    private const int InitalCount = 7;
+    private LineConfig _config;
+    private Chart _chart;
+
+    protected override void OnInitialized()
+    {
+        _config = new LineConfig
+            {
+                Options = new LineOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "ChartJs.Blazor Line Chart"
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Mode = InteractionMode.Nearest,
+                        Intersect = true
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Nearest,
+                        Intersect = true
+                    },
+                    Scales = new Scales
+                    {
+                        XAxes = new List<CartesianAxis>
+                    {
+                        new CategoryAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Month"
+                            }
+                        }
+                    },
+                        YAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Value"
+                            }
+                        }
+                    }
+                    }
+                }
+            };
+        int[] factors = new int[7];
+        factors[0] = 20;
+        factors[1] = 25;
+        factors[2] = 60;
+        factors[3] = 2;
+        factors[4] = 56;
+        factors[5] = 99;
+        factors[6] = 58;
+        
+        IDataset<int> dataset1 = new LineDataset<int>(factors)
+            {
+                Label = "My first dataset",
+                BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Red),
+                BorderColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Red),
+                Fill = FillingMode.Disabled
+            };
+
+
+        foreach(string mon in Months)
+        {
+            _config.Data.Labels.Add(mon);
+
+        }
+        _config.Data.Datasets.Add(dataset1);
+    }
+    public static List<string> Months { get; } = new List<string>(new[]
+       {
+            "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    });
+  
+
+   
+
+    private void RemoveDataset()
+    {
+        IList<IDataset> datasets = _config.Data.Datasets;
+        if (datasets.Count == 0)
+            return;
+
+        datasets.RemoveAt(datasets.Count - 1);
+        _chart.Update();
+    }
+
+    
+
+
+}
+
